@@ -30,7 +30,6 @@ app.use(cors({
 
 app.post('/create-session-natal-chart', async (req, res) => {
   try {
-    console.log(req.get('origin'));
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [
