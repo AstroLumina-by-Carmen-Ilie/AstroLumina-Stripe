@@ -15,12 +15,12 @@ const stripe = new Stripe(STRIPE_SK, {apiVersion: STRIPE_API_VER});
 const STRIPE_NATAL_CHART = process.env.STRIPE_NATAL_CHART_PRICE;
 
 const app = express();
-const port = 3000;
+const port = 3032;
 
 app.use(express.json());
 app.use(cors({
   origin: [
-    'http://localhost:3000',
+    'http://localhost:3032',
     'http://localhost:5173',
     'https://astrolumina.netlify.app',
     'https://carmenilie.com',
@@ -30,6 +30,7 @@ app.use(cors({
 
 app.post('/create-session-natal-chart', async (req, res) => {
   try {
+    console.log(req.get('origin'));
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [
@@ -39,8 +40,7 @@ app.post('/create-session-natal-chart', async (req, res) => {
         },
       ],
       mode: 'payment',
-      return_url: '',
-      redirect_on_completion: "if_required"
+      redirect_on_completion: "never"
     });
 
     res.send({ clientSecret: session.client_secret });
