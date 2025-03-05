@@ -13,6 +13,7 @@ const stripe = new Stripe(STRIPE_SK, {apiVersion: STRIPE_API_VER});
 
 const STRIPE_NATAL_CHART = process.env.STRIPE_NATAL_CHART_PRICE;
 const STRIPE_KARMIC_CHART = process.env.STRIPE_KARMIC_CHART_PRICE;
+const STRIPE_BOOKING = process.env.STRIPE_BOOKING_PRICE;
 
 const app = express();
 const port = 3032;
@@ -59,6 +60,30 @@ app.post('/create-session-karmic-chart', async (req, res) => {
       line_items: [
         {
           price: STRIPE_KARMIC_CHART,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      redirect_on_completion: "never"
+    });
+
+    res.send({ clientSecret: session.client_secret });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send({ error: error.message });
+    } else {
+      res.status(500).send({ error: 'Unknown error occurred' });
+    }
+  }
+});
+
+app.post('/create-session-booking', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      line_items: [
+        {
+          price: STRIPE_BOOKING,
           quantity: 1,
         },
       ],
