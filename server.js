@@ -26,6 +26,8 @@ app.use(cors({
     'http://localhost:3032',
     'http://localhost:5173',
     'https://astrolumina.netlify.app',
+    'astrolumina.pages.dev',
+    'development.astrolumina.pages.dev',
     'https://carmenilie.com',
     'https://www.carmenilie.com'
   ]
