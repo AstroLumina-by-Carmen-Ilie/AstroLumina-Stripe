@@ -23,13 +23,25 @@ const port = 3032;
 app.use(express.json());
 app.use(cors({
   origin: [
+    // Local development
     'http://localhost:3032',
     'http://localhost:5173',
-    'https://astrolumina.netlify.app',
-    'astrolumina.pages.dev',
-    'development.astrolumina.pages.dev',
+
+    // Cloudflare
+    'https://astrolumina.pages.dev',
+    'https://development.astrolumina.pages.dev',
+
+    // Live
     'https://carmenilie.com',
-    'https://www.carmenilie.com'
+    'https://www.carmenilie.com',
+
+    // Live
+    'https://carmenilieastrolog.com',
+    'https://www.carmenilieastrolog.com',
+
+    // Live
+    'https://astrolumina.com',
+    'https://www.astrolumina.com'
   ]
 }));
 
