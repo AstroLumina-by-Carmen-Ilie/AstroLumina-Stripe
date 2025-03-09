@@ -11,9 +11,11 @@ const STRIPE_PK = process.env.STRIPE_PK;
 const STRIPE_API_VER = process.env.STRIPE_API_VER;
 const stripe = new Stripe(STRIPE_SK, {apiVersion: STRIPE_API_VER});
 
+const STRIPE_BOOKING = process.env.STRIPE_BOOKING_PRICE;
 const STRIPE_NATAL_CHART = process.env.STRIPE_NATAL_CHART_PRICE;
 const STRIPE_KARMIC_CHART = process.env.STRIPE_KARMIC_CHART_PRICE;
-const STRIPE_BOOKING = process.env.STRIPE_BOOKING_PRICE;
+const STRIPE_TRANSIT_CHART = process.env.STRIPE_TRANSIT_CHART_PRICE;
+const STRIPE_RELATIONSHIP_CHART = process.env.STRIPE_RELATIONSHIP_CHART_PRICE;
 
 const app = express();
 const port = 3032;
@@ -21,13 +23,51 @@ const port = 3032;
 app.use(express.json());
 app.use(cors({
   origin: [
+    // Local development
     'http://localhost:3032',
     'http://localhost:5173',
-    'https://astrolumina.netlify.app',
+
+    // Cloudflare
+    'https://astrolumina.pages.dev',
+    'https://development.astrolumina.pages.dev',
+
+    // Live
     'https://carmenilie.com',
-    'https://www.carmenilie.com'
+    'https://www.carmenilie.com',
+
+    // Live
+    'https://carmenilieastrolog.com',
+    'https://www.carmenilieastrolog.com',
+
+    // Live
+    'https://astrolumina.com',
+    'https://www.astrolumina.com'
   ]
 }));
+
+app.post('/create-session-booking', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      line_items: [
+        {
+          price: STRIPE_BOOKING,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      redirect_on_completion: "never"
+    });
+
+    res.send({ clientSecret: session.client_secret });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send({ error: error.message });
+    } else {
+      res.status(500).send({ error: 'Unknown error occurred' });
+    }
+  }
+});
 
 app.post('/create-session-natal-chart', async (req, res) => {
   try {
@@ -77,13 +117,37 @@ app.post('/create-session-karmic-chart', async (req, res) => {
   }
 });
 
-app.post('/create-session-booking', async (req, res) => {
+app.post('/create-session-transit-chart', async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [
         {
-          price: STRIPE_BOOKING,
+          price: STRIPE_TRANSIT_CHART,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      redirect_on_completion: "never"
+    });
+
+    res.send({ clientSecret: session.client_secret });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send({ error: error.message });
+    } else {
+      res.status(500).send({ error: 'Unknown error occurred' });
+    }
+  }
+});
+
+app.post('/create-session-relationship-chart', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      line_items: [
+        {
+          price: STRIPE_RELATIONSHIP_CHART,
           quantity: 1,
         },
       ],
