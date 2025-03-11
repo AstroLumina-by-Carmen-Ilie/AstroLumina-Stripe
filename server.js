@@ -5,6 +5,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const STRIPE_SK = process.env.STRIPE_SK;
 const STRIPE_PK = process.env.STRIPE_PK;
@@ -19,6 +20,18 @@ const STRIPE_RELATIONSHIP_CHART = process.env.STRIPE_RELATIONSHIP_CHART_PRICE;
 
 const app = express();
 const port = 3032;
+
+// Configure rate limiter: maximum of 20 requests per minute
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20, // limit each IP to 20 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after a minute'
+});
+
+// Apply the rate limiter to all routes
+app.use(limiter);
 
 app.use(express.json());
 app.use(cors({
